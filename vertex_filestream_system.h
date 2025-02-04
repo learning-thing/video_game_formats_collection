@@ -1,3 +1,6 @@
+#ifndef VFSS_H
+#define VFSS_H
+
 typedef enum 
 {
     // Vertex attribute formats (e.g., position, normal, etc.)
@@ -69,3 +72,4 @@ typedef struct
 	uint32_t mesh_count;   			// Number of meshes
 	vertex_buffer_info buffers[];  	// Variable array of mesh buffers
 } VFSS;
+#endif
