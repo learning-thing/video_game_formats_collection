@@ -1,6 +1,8 @@
 #ifndef TFSS_H
 #define TFSS_H
 
+#include <stdint.h>
+
 typedef enum 
 {
 	MFSS_UNKNOWN 	  = 0,
