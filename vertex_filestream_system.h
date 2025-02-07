@@ -1,6 +1,8 @@
 #ifndef VFSS_H
 #define VFSS_H
 
+#include <stdint.h>
+
 typedef enum 
 {
     // Vertex attribute formats (e.g., position, normal, etc.)
