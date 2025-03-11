@@ -72,6 +72,6 @@ typedef struct
 
 	char mesh_section[4];  			// "VFBS"
 	uint32_t mesh_count;   			// Number of meshes
-	vertex_buffer_info buffers[];  	// Variable array of mesh buffers
+	VFSS_buffer_info buffers[];  	// Variable array of mesh buffers
 } VFSS;
 #endif
