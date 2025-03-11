@@ -73,7 +73,7 @@ typedef enum
     COLOR_FORMAT_UINT,
     COLOR_FORMAT_FLOAT,
     COLOR_FORMAT_FLOAT16,
-};
+} texture_color_format;
 
 
 typedef struct 
@@ -86,8 +86,8 @@ typedef struct
 	
     uint8_t mip_count;         // Number of mipmap levels
     uint16_t array_size;       // Number of layers (for texture arrays), if set to zero then it is only a single texture
-    uint8_t comp_format;            // Texture format (e.g., RGBA8, BC7)
-    uint8_t color_format;
+    uint8_t comp_format;       // Texture format (e.g., RGBA8, BC7)
+    uint8_t color_format;      // bottom 4 bits represents color properties, top 4 bits represents color variable format 
 
     uint32_t size;             // Total size of the texture data in bytes
 } texture_info;
