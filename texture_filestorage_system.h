@@ -59,6 +59,22 @@ typedef enum {
     GPU_TEXTURE_COMPRESSED_MAX // Sentinel value
 } texture_compression_formats;
 
+typedef enum
+{
+    COLOR_R = 1 << 3,
+    COLOR_G = 1 << 2,
+    COLOR_B = 1 << 1,
+    COLOR_A = 1 << 0
+} texture_color_properties;
+
+typedef enum
+{
+    COLOR_FORMAT_INT,
+    COLOR_FORMAT_UINT,
+    COLOR_FORMAT_FLOAT,
+    COLOR_FORMAT_FLOAT16,
+};
+
 
 typedef struct 
 {
@@ -70,8 +86,9 @@ typedef struct
 	
     uint8_t mip_count;         // Number of mipmap levels
     uint16_t array_size;       // Number of layers (for texture arrays), if set to zero then it is only a single texture
-    uint8_t format;            // Texture format (e.g., RGBA8, BC7)
-	
+    uint8_t comp_format;            // Texture format (e.g., RGBA8, BC7)
+    uint8_t color_format;
+
     uint32_t size;             // Total size of the texture data in bytes
 } texture_info;
 
