@@ -101,7 +101,7 @@ typedef struct
 	uint8_t lossy_compresion_type;
 	
 	uint32_t texture_count;
-	texture_info* textures
+	texture_info* textures;
 	
 } TFSS;
 
