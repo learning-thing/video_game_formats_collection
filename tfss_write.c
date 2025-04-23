@@ -1,4 +1,6 @@
 #include "tfss_read_write.h"
+#include "texture_filestorage_system.h"
+
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -89,7 +91,7 @@ int select_best_filter(uint8_t *out, const uint8_t *scanline, const uint8_t *pre
     return best_filter;
 }
 
-void save_tfss_zstd(const char* name, uint8_t* data, int bytes_per_pixel, int width, int height, int compression_level)
+void save_tfss_zstd(const char* name, uint8_t* data, int bytes_per_pixel, int width, int height, int image_format, char name[32], int mip_count, int array_size, int image_format, int compression_level)
 {
     int filtered_size;
 
@@ -116,7 +118,7 @@ void save_tfss_zstd(const char* name, uint8_t* data, int bytes_per_pixel, int wi
     uint8_t* compressed_data = malloc(max_compressed_size);
 
     size_t compressed_size = ZSTD_compress((void*)compressed_data, max_compressed_size, (void*)filtered, total_size, compression_level);
-    printf("%d\n", (uint32_t)compressed_size);
+
     if (ZSTD_isError(compressed_size)) 
     {
         fprintf(stderr, "Compression failed: %s\n", ZSTD_getErrorName(compressed_size));
@@ -135,27 +137,21 @@ void save_tfss_zstd(const char* name, uint8_t* data, int bytes_per_pixel, int wi
     }
 
     fwrite((char[]){'M', 'T', 'S', 'S'}, 1, 4, file);
-    
-    fwrite((uint8_t[]){0}, 1, 1, file);
-    fwrite((uint8_t[]){0}, 1, 1, file);
 
     uint32_t num_of_textures = 1;
     fwrite(&num_of_textures, sizeof(uint32_t), 1, file);
 
-    for(int i = 0; i < 32; i++)
-        fwrite((char[]){0}, 1, 1, file);
+    fwrite(name, 1, 32, file);
     
     fwrite(&width, sizeof(int), 1, file);
     fwrite(&height, sizeof(int), 1, file);
     for(int i = 0; i < 4; i++)
         fwrite((char[]){0}, 1, 1, file);
+    uint8_t t_mip_count = (uint8_t)mip_count, t_array_size=(uint8_t)array_size, t_image_format=(uint8_t)image_format;
     
-    fwrite((char[]){0}, 1, 1, file);
-    
-    for(int i = 0; i < 2; i++)
-        fwrite((char[]){0}, 1, 1, file);
-    
-    fwrite((char[]){0}, 1, 1, file);
+    fwrite(&t_mip_count, 1, 1, file);
+    fwrite(&t_array_size, 1, 1, file);
+    fwrite(&t_image_format, 1, 1, file);
     
     uint8_t channel = bytes_per_pixel;
     fwrite(&(channel), 1, 1, file);
@@ -170,31 +166,12 @@ void save_tfss_zstd(const char* name, uint8_t* data, int bytes_per_pixel, int wi
     free(filtered);
 }
 
-// Simple RGB checkerboard pattern
-void generate_checkerboard(uint8_t* data, int width, int height, int bpp) {
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            int i = (y * width + x) * bpp;
-            int checker = ((x / 8) + (y / 8)) % 2;
-            if (checker) {
-                data[i + 0] = 255; // R
-                data[i + 1] = 255; // G
-                data[i + 2] = 255; // B
-            } else {
-                data[i + 0] = 0;
-                data[i + 1] = 0;
-                data[i + 2] = 0;
-            }
-        }
-    }
-}
-
 int main() {
     int width = 0;
     int height = 0;
     int bpp = 3; // RGB
-    int compression_level = 3;
-    uint8_t* data = stbi_load("photo.png", &width, &height, &bpp, 0);
+    int compression_level = 22;
+    uint8_t* data = stbi_load("SamplePNGImage_30mbmb.png", &width, &height, &bpp, 0);
     size_t data_size = width * height * bpp;
 
     if (!data) {

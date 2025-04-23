@@ -1,4 +1,6 @@
 #include "tfss_read_write.h"
+#include "texture_filestorage_system.h"
+
 #include <stdio.h>
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -80,7 +82,101 @@ void decode_image(uint8_t *out, const uint8_t *compressed_filtered_data, int wid
 
 
 
-void load_tfss_zstd(const char* name, uint8_t* data, int* bytes_per_pixel, int* width, int* height)
+TFSS load_tfss_header(const char* name)
+{
+    TFSS header = {0};
+    FILE* file = fopen(name, "rb");
+   
+    char magic[4] = {0};
+    fread(magic, sizeof(char), 4, file);
+
+    uint32_t size = 0;
+    fread(&size, sizeof(uint32_t), 4, file);
+
+    for(int i = 0; i < size; i++)
+    {
+	
+        uint32_t width;            // Texture width
+        uint32_t height;           // Texture height
+        uint32_t depth;            // 3D texture depth (optional, 0 if 2D)
+        
+        uint8_t mip_count;         // Number of mipmap levels
+        uint8_t array_size;        // Number of layers (for texture arrays), if set to zero then it is only a single texture
+        uint8_t image_format;       // Texture format (e.g., RGBA8, BC7)
+        uint8_t color_format;      //  color format so number of colors
+
+        uint32_t texture_size;             // Total size of the texture data in bytes
+
+        fread(&width,  sizeof(uint32_t), 4, file);
+        fread(&height, sizeof(uint32_t), 4, file);
+        fread(&depth,  sizeof(uint32_t), 4, file);
+        
+        fread(&mip_count, sizeof(uint8_t), 4, file);
+        fread(&array_size, sizeof(uint8_t), 4, file);
+        fread(&image_format, sizeof(uint8_t), 4, file);
+        fread(&color_format, sizeof(uint8_t), 4, file);
+
+        fread(&texture_size,  sizeof(uint32_t), 4, file);
+
+        // set file header here
+
+        fseek(file, size, SEEK_CUR);
+    }
+
+    fclose(file);
+    
+    return header;
+}
+
+TFSS load_tfss_header_index(const char* name, int position)
+{
+    TFSS header = {0};
+    FILE* file = fopen(name, "rb");
+   
+    char magic[4] = {0};
+    fread(magic, sizeof(char), 4, file);
+
+    uint32_t size = 0;
+    fread(&size, sizeof(uint32_t), 4, file);
+
+
+    for(int i = 0; i < position; i++)
+    {
+        fseek(file, 48, SEEK_CUR);
+        uint32_t temp_read = 0;
+        fread(&temp_read,  sizeof(uint32_t), 4, file);
+        fseek(file, temp_read, SEEK_CUR);
+    }
+    
+
+    uint32_t width;            // Texture width
+    uint32_t height;           // Texture height
+    uint32_t depth;            // 3D texture depth (optional, 0 if 2D)
+    
+    uint8_t mip_count;         // Number of mipmap levels
+    uint8_t array_size;        // Number of layers (for texture arrays), if set to zero then it is only a single texture
+    uint8_t image_format;       // Texture format (e.g., RGBA8, BC7)
+    uint8_t color_format;      //  color format so number of colors
+
+    uint32_t texture_size;             // Total size of the texture data in bytes
+
+    fread(&width,  sizeof(uint32_t), 4, file);
+    fread(&height, sizeof(uint32_t), 4, file);
+    fread(&depth,  sizeof(uint32_t), 4, file);
+    
+    fread(&mip_count, sizeof(uint8_t), 4, file);
+    fread(&array_size, sizeof(uint8_t), 4, file);
+    fread(&image_format, sizeof(uint8_t), 4, file);
+    fread(&color_format, sizeof(uint8_t), 4, file);
+
+    fread(&texture_size,  sizeof(uint32_t), 4, file);
+
+    fclose(file);
+    
+    return header;
+}
+
+void load_tfss_index(const char* name, uint8_t* data, int* bytes_per_pixel, int* width, int* height, int index)
 {
     FILE* file = fopen(name, "rb");
     if (!file) {
@@ -98,7 +194,7 @@ void load_tfss_zstd(const char* name, uint8_t* data, int* bytes_per_pixel, int* 
 
     printf("%s\n", magic);
 
-    fseek(file, 38, SEEK_CUR);
+    fseek(file, 36, SEEK_CUR);
 
     int width_buf = 0, height_buf = 0;
     fread(&width_buf, sizeof(int), 1, file);
@@ -106,7 +202,7 @@ void load_tfss_zstd(const char* name, uint8_t* data, int* bytes_per_pixel, int* 
 
     printf("%dx%d\n", width_buf, height_buf);
     
-    fseek(file, 8, SEEK_CUR);
+    fseek(file, 7, SEEK_CUR);
 
     uint8_t bpp_buf = 0;
     fread(&bpp_buf, sizeof(char), 1, file);
@@ -145,7 +241,7 @@ void load_tfss_zstd(const char* name, uint8_t* data, int* bytes_per_pixel, int* 
 
 int main() {
     const char* tfss_file = "test.tfss";
-    const char* reference_png = "photo.png";
+    const char* reference_png = "SamplePNGImage_30mbmb.png";
 
     int w_tfss = 0, h_tfss = 0, bpp_tfss = 0;
     int w_ref = 0, h_ref = 0, bpp_ref = 0;
@@ -168,7 +264,7 @@ int main() {
     }
 
     // Load TFSS image
-    load_tfss_zstd(tfss_file, image_data, &bpp_tfss, &w_tfss, &h_tfss);
+    load_tfss_index(tfss_file, image_data, &bpp_tfss, &w_tfss, &h_tfss, 0);
 
     printf("TFSS image: %dx%d, bpp=%d\n", w_tfss, h_tfss, bpp_tfss);
 
