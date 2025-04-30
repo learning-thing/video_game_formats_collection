@@ -91,7 +91,7 @@ int select_best_filter(uint8_t *out, const uint8_t *scanline, const uint8_t *pre
     return best_filter;
 }
 
-void save_tfss_zstd(const char* name, uint8_t* data, int bytes_per_pixel, int width, int height, int image_format, char name[32], int mip_count, int array_size, int image_format, int compression_level)
+void save_tfss_zstd(const char* name, uint8_t* data, int bytes_per_pixel, int width, int height, int image_format, char texture_name[32], int mip_count, int array_size, int compression_level)
 {
     int filtered_size;
 
@@ -141,7 +141,7 @@ void save_tfss_zstd(const char* name, uint8_t* data, int bytes_per_pixel, int wi
     uint32_t num_of_textures = 1;
     fwrite(&num_of_textures, sizeof(uint32_t), 1, file);
 
-    fwrite(name, 1, 32, file);
+    fwrite(texture_name, 1, 32, file);
     
     fwrite(&width, sizeof(int), 1, file);
     fwrite(&height, sizeof(int), 1, file);

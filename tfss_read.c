@@ -192,8 +192,6 @@ void load_tfss_index(const char* name, uint8_t* data, int* bytes_per_pixel, int*
         return;
     }
 
-    printf("%s\n", magic);
-
     fseek(file, 36, SEEK_CUR);
 
     int width_buf = 0, height_buf = 0;

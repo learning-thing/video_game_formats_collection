@@ -77,6 +77,7 @@ typedef struct
     
     uint8_t mip_count;         // Number of mipmap levels
     uint8_t image_format;       // Texture format (e.g., RGBA8, BC7)
+    uint16_t image_count;
 
     uint32_t size;             // Total size of the texture data in bytes in order to access the next image, after decompression, the 
 } texture_info;
