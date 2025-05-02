@@ -1,6 +1,9 @@
 #include "tfss_read_write.h"
 #include <stdio.h>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 #ifdef TEST_READ
 int main() {
     const char* tfss_file = "test.tfss";
