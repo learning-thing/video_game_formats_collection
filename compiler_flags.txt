@@ -1,3 +1,3 @@
 -Iinclude/
--Iformat_def
+-Iformat_def/
 -std=c99

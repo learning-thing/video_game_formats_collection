@@ -22,7 +22,6 @@ void filter_avg(uint8_t *filtered, const uint8_t *scanline, const uint8_t *prev,
 void filter_paeth(uint8_t *filtered, const uint8_t *scanline, const uint8_t *prev, size_t length, int bpp);
 
 
-
 void save_tfss_zstd(const char* name, uint8_t* data, int bytes_per_pixel, int width, int height, int image_format, char texture_name[32], int mip_count, int array_size, int compression_level);
 void load_tfss_zstd(const char* name, uint8_t* data, int* bytes_per_pixel, int* width, int* height);
 

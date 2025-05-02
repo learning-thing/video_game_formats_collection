@@ -1,12 +1,11 @@
 #include "tfss_read_write.h"
-#include "texture_filestorage_system.h"
 
+#include <texture_filestorage_system.h>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include <stb_image.h>
+#include <zstd/zstd.h>
 
 #include <stdio.h>
-#include "zstd/zstd.h"
 
 uint8_t paeth_predictor(uint8_t a, uint8_t b, uint8_t c) {
     int p = a + b - c;
@@ -166,23 +165,4 @@ void save_tfss_zstd(const char* name, uint8_t* data, int bytes_per_pixel, int wi
     free(filtered);
 }
 
-int main() {
-    int width = 0;
-    int height = 0;
-    int bpp = 3; // RGB
-    int compression_level = 22;
-    uint8_t* data = stbi_load("SamplePNGImage_30mbmb.png", &width, &height, &bpp, 0);
-    size_t data_size = width * height * bpp;
 
-    if (!data) {
-        fprintf(stderr, "Failed to allocate image memory\n");
-        return 1;
-    }
-
-    //generate_checkerboard(data, width, height, bpp);
-    save_tfss_zstd("test.tfss", data, bpp, width, height, compression_level);
-    stbi_image_free(data);
-
-    printf("test.tfss saved successfully!\n");
-    return 0;
-}
