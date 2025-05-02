@@ -1,7 +1,6 @@
 #ifndef TFSS_FILE_CREATION_H
 #define TFSS_FILE_CREATION_H
 
-
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -24,5 +23,7 @@ void filter_paeth(uint8_t *filtered, const uint8_t *scanline, const uint8_t *pre
 
 void save_tfss_zstd(const char* name, uint8_t* data, int bytes_per_pixel, int width, int height, int image_format, char texture_name[32], int mip_count, int array_size, int compression_level);
 void load_tfss_zstd(const char* name, uint8_t* data, int* bytes_per_pixel, int* width, int* height);
+
+void load_tfss_index(const char* name, uint8_t* data, int* bytes_per_pixel, int* width, int* height, int index);
 
 #endif
