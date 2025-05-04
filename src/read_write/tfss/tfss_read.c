@@ -175,6 +175,39 @@ TFSS load_tfss_header_index(const char* name, int position)
     return header;
 }
 
+void get_tfss_resolution(const char* name, int* width, int* height) {
+    FILE* file = fopen(name, "rb");
+    if (!file) {
+        fprintf(stderr, "error: file did not open correctly\n");
+        return;
+    }
+
+    char magic[4] = {0};
+    int width_buf = 0, height_buf = 0;
+    fread(magic, sizeof(char), 4, file);
+    if (memcmp(magic, "MTSS", 4) != 0) {
+        fprintf(stderr, "error: invalid magic\n");
+        fclose(file);
+        return;
+    }
+
+    printf("%s\n", magic);
+
+    fseek(file, 38, SEEK_CUR);
+    
+    fread(&width_buf, sizeof(int), 1, file);
+    fread(&height_buf, sizeof(int), 1, file);
+    //printf("%dx%d\n", *width, *height);
+    
+    fseek(file, 8, SEEK_CUR);
+
+    uint8_t bpp_buf = 0;
+    fread(&bpp_buf, sizeof(char), 1, file);
+    fclose(file);
+    *width = width_buf;
+    *height = height_buf;
+}
+
 void load_tfss_index(const char* name, uint8_t* data, int* bytes_per_pixel, int* width, int* height, int index)
 {
     FILE* file = fopen(name, "rb");
